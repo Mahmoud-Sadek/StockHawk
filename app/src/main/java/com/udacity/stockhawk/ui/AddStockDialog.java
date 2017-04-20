@@ -7,6 +7,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
 
@@ -36,6 +38,9 @@ public class AddStockDialog extends DialogFragment {
         @SuppressLint("InflateParams") View custom = inflater.inflate(R.layout.add_stock_dialog, null);
 
         ButterKnife.bind(this, custom);
+
+        //to apply only upper chars
+        stock.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         stock.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -66,10 +71,17 @@ public class AddStockDialog extends DialogFragment {
     }
 
     private void addStock() {
-        Activity parent = getActivity();
-        if (parent instanceof MainActivity) {
-            ((MainActivity) parent).addStock(stock.getText().toString());
+        if (stock.getText().toString().equals("")){
+            Toast.makeText(getActivity(), "input is empty!!", Toast.LENGTH_SHORT).show();
+            return;
         }
+        if (stock.getText().toString().matches("[A-Za-z0-9 ]*")){
+            Activity parent = getActivity();
+            if (parent instanceof MainActivity) {
+                ((MainActivity) parent).addStock(stock.getText().toString());
+            }
+        }
+
         dismissAllowingStateLoss();
     }
 
