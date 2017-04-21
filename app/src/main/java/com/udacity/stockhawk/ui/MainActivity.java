@@ -1,5 +1,8 @@
 package com.udacity.stockhawk.ui;
 
+import android.app.PendingIntent;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,6 +20,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -141,6 +145,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                                         PrefUtils.addStock(getApplicationContext(), stockSymbol);
                                         QuoteSyncJob.syncImmediately(getApplicationContext());
 
+                                        RemoteViews remoteViews = new RemoteViews(getBaseContext().getPackageName(),R.layout.widget);
+
+                                        Intent clickIntent = new Intent(getBaseContext(),StockWidgetProvider.class);
+
+                                        Context context = getBaseContext();
+                                        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+                                        ComponentName thisWidget = new ComponentName(context, StockWidgetProvider.class);
+                                        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
+
+                                        clickIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                                        clickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,
+                                                appWidgetIds);
+
+                                        PendingIntent pendingIntent = PendingIntent.getBroadcast(getBaseContext(), 0, clickIntent,
+                                                PendingIntent.FLAG_UPDATE_CURRENT);
+                                        remoteViews.setOnClickPendingIntent(R.id.widget_title, pendingIntent);
+                                        appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
                                     }
                                 });
                             } else {

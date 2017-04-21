@@ -71,6 +71,7 @@ public class AddStockDialog extends DialogFragment {
     }
 
     private void addStock() {
+
         if (stock.getText().toString().equals("")){
             Toast.makeText(getActivity(), "input is empty!!", Toast.LENGTH_SHORT).show();
             return;
